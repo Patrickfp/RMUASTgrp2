@@ -11,7 +11,7 @@ from pylab import ion
 from imu_box3d import imu_visualize
 
 # name of the file to read ##
-fileName = 'imu_razor_data_pitch_55deg.txt'
+fileName = '../../rmuast_s19_materials_week_6/exercise_imu_kalman/imu_razor_data_pitch_55deg.txt'
 
 ## IMU type
 #imuType = 'vectornav_vn100'
