@@ -7,9 +7,9 @@
 ##### Insert initialize code below ###################
 
 ## Uncomment the file to read ##
-#fileName = 'imu_razor_data_static.txt'
-fileName = '../../rmuast_s19_materials_week_6/exercise_imu/imu_razor_data_pitch_55deg.txt'
-#fileName = '../../rmuast_s19_materials_week_6/exercise_imu/razor_data_roll_65deg.txt'
+fileName = '../../rmuast_s19_materials_week_6/exercise_imu/imu_razor_data_static.txt'
+#fileName = '../../rmuast_s19_materials_week_6/exercise_imu/imu_razor_data_pitch_55deg.txt'
+#fileName = '../../rmuast_s19_materials_week_6/exercise_imu/imu_razor_data_roll_65deg.txt'
 #fileName = '../../rmuast_s19_materials_week_6/exercise_imu/imu_razor_data_yaw_90deg.txt'
 
 ## IMU type
@@ -31,7 +31,7 @@ myValue = 0.0
 ######################################################
 
 # import libraries
-from math import pi, sqrt, atan2
+from math import pi, sqrt, atan2, atan
 import matplotlib.pyplot as plt
 
 # open the imu data file
@@ -90,7 +90,10 @@ for line in f:
 
 	## Insert your code here ##
 	
-	
+
+	pitch = atan(acc_y/sqrt(acc_x*acc_x+acc_z*acc_z))
+
+	roll = atan(-acc_x/acc_z)
 	
 	
 	
