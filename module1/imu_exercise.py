@@ -7,8 +7,8 @@
 ##### Insert initialize code below ###################
 
 ## Uncomment the file to read ##
-fileName = '../../rmuast_s19_materials_week_6/exercise_imu/imu_razor_data_static.txt'
-#fileName = '../../rmuast_s19_materials_week_6/exercise_imu/imu_razor_data_pitch_55deg.txt'
+#fileName = '../../rmuast_s19_materials_week_6/exercise_imu/imu_razor_data_static.txt'
+fileName = '../../rmuast_s19_materials_week_6/exercise_imu/imu_razor_data_pitch_55deg.txt'
 #fileName = '../../rmuast_s19_materials_week_6/exercise_imu/imu_razor_data_roll_65deg.txt'
 #fileName = '../../rmuast_s19_materials_week_6/exercise_imu/imu_razor_data_yaw_90deg.txt'
 
@@ -24,14 +24,11 @@ plotData = []
 myValue = 0.0
 
 
-
-
-
-
 ######################################################
 
 # import libraries
 from math import pi, sqrt, atan2, atan
+from scipy.signal import butter, lfilter, freqz
 import matplotlib.pyplot as plt
 
 # open the imu data file
@@ -39,6 +36,19 @@ f = open (fileName, "r")
 
 # initialize variables
 count = 0
+
+
+def butter_lowpass(cutoff, fs, order=5):
+	nyq = 0.5 * fs
+	normal_cutoff = cutoff / nyq
+	b, a = butter(order, normal_cutoff, btype='low', analog=False)
+	return b, a
+
+
+def butter_lowpass_filter(data, cutoff, fs, order=5):
+	b, a = butter_lowpass(cutoff, fs, order=order)
+	y = lfilter(b, a, data)
+	return y
 
 # looping through file
 
@@ -111,10 +121,12 @@ for line in f:
 # closing the file	
 f.close()
 
+
 # show the plot
 if showPlot == True:
-	plt.plot(plotData)
-	plt.savefig('imu_exercise_plot.png')
+	plt.plot(butter_lowpass_filter(plotData,3,100,3))
+	#plt.plot(plotData)
+	#plt.savefig('imu_exercise_plot.png')
 	plt.show()
 
 
