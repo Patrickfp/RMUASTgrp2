@@ -8,9 +8,9 @@
 
 ## Uncomment the file to read ##
 #fileName = 'imu_razor_data_static.txt'
-fileName = 'imu_razor_data_pitch_55deg.txt'
-#fileName = 'imu_razor_data_roll_65deg.txt'
-#fileName = 'imu_razor_data_yaw_90deg.txt'
+fileName = '../../rmuast_s19_materials_week_6/exercise_imu/imu_razor_data_pitch_55deg.txt'
+#fileName = '../../rmuast_s19_materials_week_6/exercise_imu/razor_data_roll_65deg.txt'
+#fileName = '../../rmuast_s19_materials_week_6/exercise_imu/imu_razor_data_yaw_90deg.txt'
 
 ## IMU type
 #imuType = 'vectornav_vn100'
