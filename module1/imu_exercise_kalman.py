@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # IMU exercise
-# Copyright (c) 2015-2017 Kjeld Jensen kjen@mmmi.sdu.dk kj@kjen.dk
+# Copyright (c) 2015-2018 Kjeld Jensen kjeld@mmmi.sdu.dk kj@kjen.dk
 
 # import libraries
 import math
@@ -23,31 +23,28 @@ showPlot = True
 show3DLiveView = False
 show3DLiveViewInterval = 3
 
-##### Insert initialize code below ###################
-
 # approx. bias values determined by averaging over static measurements
+bias_gyro_x = 0.0753 # [rad/measurement]
+bias_gyro_y = 0.0417 # [rad/measurement]
+bias_gyro_z = 0.0008 # [rad/measurement]
+
+
 bias_gyro_x = 0.0 # [rad/measurement]
 bias_gyro_y = 0.0 # [rad/measurement]
 bias_gyro_z = 0.0 # [rad/measurement]
 
+##### Insert initialize code below ###################
+
 # variances
-gyroVar_x = 0
-gyroVar_y = 0
-gyroVar_z = 0
-pitchVar = 0
+gyroVar = 0.005
+pitchVar = 0.01
 
 # Kalman filter start guess
-estAngle_x = -pi/4.0
-estAngle_y = -pi/4.0
-estAngle_z = -pi/4.0
-estVar_x = pi
-estVar_y = pi
-estVar_z = pi
+estAngle = -pi/4.0
+estVar = 3.14
 
 # Kalman filter housekeeping variables
-gyroVarAcc_x = 0
-gyroVarAcc_y = 0
-gyroVarAcc_z = 0
+gyroVarAcc = 0.0
 
 ######################################################
 
@@ -66,29 +63,11 @@ f = open (fileName, "r")
 
 # initialize variables
 count = 0
-delta_time = 0
 gyro_x = 0
 gyro_y = 0
 gyro_z = 0
-pitch = 0
-roll = 0
-acc_x = 0
-acc_y = 0
-acc_z = 0
-pred_angle_x = 0
-pred_angle_y = 0
-pred_angle_z = 0
-pred_var_x = 0
-pred_var_y = 0
-pred_var_z = 0
-kx = 0
-ky = 0
-kz = 0
-corrVar_x = 0
-corrVar_y = 0
-corrVar_z = 0
-corrAngle_x = 0
-corrAngle_y = 0
+
+
 corrAngle_z = 0
 
 # initialize 3D liveview
@@ -158,64 +137,31 @@ for line in f:
 	roll = math.atan((-(acc_x))/(acc_z))
 
 	# integrate gyro velocities to releative angles
-	delta_time = ts_now - ts_prev
+	T = ts_now - ts_prev
 
-	gyro_x_rel += gyro_x * delta_time
-	#gyro_y_rel += gyro_y * delta_time
-	#gyro_z_rel += gyro_z * delta_time
-
-	# Kalman prediction step (we have new data in each iteration)
-
-	pred_angle_x = estAngle_x + gyro_x_rel
-	#pred_angle_y = estAngle_y + gyro_y_rel
-	#pred_angle_z = estAngle_z + gyro_z_rel
-
-	gyroVarAcc_x += gyroVar_x
-	#gyroVarAcc_y += gyroVar_y
-	#gyroVarAcc_z += gyroVar_z
-
-	pred_var_x = estVar_x + gyroVarAcc_x * delta_time
-	#pred_var_y = estVar_y + gyroVarAcc_y * delta_time
-	#pred_var_z = estVar_z + gyroVarAcc_z * delta_time
-
-	estAngle_x = pred_angle_x
-	#estAngle_y = pred_angle_y
-	#estAngle_z = pred_angle_z
-
-	estVar_x = pred_var_x
-	#estVar_y = pred_var_y
+	gyro_x_rel += gyro_x * T
+	gyro_y_rel += gyro_y * T
+	gyro_z_rel += gyro_z * T
 	#estVar_z = pred_var_z
 
-
+	# Kalman prediction step (we have new data in each iteration)
+	predAngle = estAngle + gyro_x * T
+	gyroVarAcc = gyroVarAcc + gyroVar
+	predVar = estVar + gyroVarAcc * T
+	estAngle = predAngle
+	estVar = predVar
 
 	# Kalman correction step (we have new data in each iteration)
+	K = predVar/(predVar+pitchVar)
+	corrAngle = predAngle + K*(pitch - predAngle)
+	corrVar = predVar*(1 - K)
+	estAngle = corrAngle
+	estVar = corrVar
+	gyroVarAcc = 0
 
-	kx = (pred_var_x)/((pred_var_x)+(acc_x))
-	#ky = (pred_var_y)/((pred_var_y)+(acc_y))
-	#kz = (pred_var_z)/((pred_var_z)+(acc_z))
-
-	corrAngle_x = pred_angle_x + kx * ((acc_x)-(pred_angle_x))
-	#corrAngle_y = pred_angle_y + ky * ((acc_y)-(pred_angle_y))
-	#corrAngle_z = pred_angle_z + kz * ((acc_z)-(pred_angle_z))
-
-	corrVar_x = pred_var_x * (1-kx)
-	#corrVar_y = pred_var_y * (1-ky)
-	#corrVar_z = pred_var_z * (1-kz)
-
-	estAngle_x = corrAngle_x
-	#estAngle_y = corrAngle_y
-	#estAngle_z = corrAngle_z
-
-	estVar_x = corrVar_x
-	#estVar_y = corrVar_y
-	#estVar_z = corrVar_z
-
-	gyroVarAcc_x = 0
-	gyroVarAcc_y = 0
-	gyroVarAcc_z = 0
 
 	# define which value to plot as the Kalman filter estimate
-	kalman_estimate = estAngle_x
+	kalman_estimate = estAngle
 
 	# define which value to plot as the absolute value (pitch/roll)
 	pitch_roll_plot = pitch
@@ -226,21 +172,21 @@ for line in f:
 	######################################################
 
 	# if 3D liveview is enabled
-#	if show3DLiveView == True and count % show3DLiveViewInterval == 0:
-#
-#		# determine what variables to liveview
-#		roll_view = 0.0
-#		yaw_view = 0.0
-#		pitch_view = kalman_estimate
-#
-#		imuview.set_axis (-pitch_view, -yaw_view, roll_view)
-#		imuview.update()
+	if show3DLiveView == True and count % show3DLiveViewInterval == 0:
+
+		# determine what variables to liveview
+		roll_view = 0.0
+		yaw_view = 0.0
+		pitch_view = kalman_estimate
+
+		imuview.set_axis (-pitch_view, -yaw_view, roll_view)
+		imuview.update()
 
 	# if plotting is enabled
-#	if showPlot == True:
-#		plotDataGyro.append(gyro_rel_plot*180.0/pi)
-#		plotDataAcc.append(pitch_roll_plot*180.0/pi)
-#		plotDataKalman.append(kalman_estimate*180.0/pi)
+	if showPlot == True:
+		#plotDataGyro.append(gyro_rel_plot*180.0/pi)
+		#plotDataAcc.append(pitch_roll_plot*180.0/pi)
+		plotDataKalman.append(kalman_estimate*180.0/pi)
 
 # closing the file
 f.close()
