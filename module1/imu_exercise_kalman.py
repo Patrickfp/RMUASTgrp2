@@ -40,8 +40,8 @@ gyroVar = 0.005
 pitchVar = 0.01
 
 # Kalman filter start guess
-estAngle = -pi/4.0
-estVar = 3.14
+estAngle = -pi*2
+estVar = 3.14*5
 
 # Kalman filter housekeeping variables
 gyroVarAcc = 0.0
@@ -184,8 +184,8 @@ for line in f:
 
 	# if plotting is enabled
 	if showPlot == True:
-		#plotDataGyro.append(gyro_rel_plot*180.0/pi)
-		#plotDataAcc.append(pitch_roll_plot*180.0/pi)
+		plotDataGyro.append(gyro_rel_plot*180.0/pi)
+		plotDataAcc.append(pitch_roll_plot*180.0/pi)
 		plotDataKalman.append(kalman_estimate*180.0/pi)
 
 # closing the file
@@ -200,9 +200,10 @@ if showPlot == True:
 	plt.savefig('imu_exercise_gyro.png')
 
 	plt.figure(2)
-	plt.title('Accelerometer (blue) & Kalman estimation (red) angles')
+	plt.title('Accelerometer (blue) & Gyro (green), Kalman (red)')
 	plt.plot(plotDataAcc,'blue')
 	plt.plot(plotDataKalman,'red')
+	plt.plot(plotDataGyro, 'green')
 	plt.savefig('imu_exercise_acc_kalman.png')
 	plt.draw()
 	print ('Press enter to quit')

@@ -8,9 +8,9 @@
 
 ## Uncomment the file to read ##
 #fileName = '../../rmuast_s19_materials_week_6/exercise_imu/imu_razor_data_static.txt'
-fileName = '../../rmuast_s19_materials_week_6/exercise_imu/imu_razor_data_pitch_55deg.txt'
+#fileName = '../../rmuast_s19_materials_week_6/exercise_imu/imu_razor_data_pitch_55deg.txt'
 #fileName = '../../rmuast_s19_materials_week_6/exercise_imu/imu_razor_data_roll_65deg.txt'
-#fileName = '../../rmuast_s19_materials_week_6/exercise_imu/imu_razor_data_yaw_90deg.txt'
+fileName = '../../rmuast_s19_materials_week_6/exercise_imu/imu_razor_data_yaw_90deg.txt'
 
 ## IMU type
 #imuType = 'vectornav_vn100'
@@ -37,8 +37,9 @@ pp_roll = 0
 ######################################################
 
 # import libraries
+import math
 from math import pi, sqrt, atan2, atan
-from scipy.signal import butter, lfilter, freqz
+#from scipy.signal import butter, lfilter, freqz
 import matplotlib.pyplot as plt
 
 # open the imu data file
@@ -48,17 +49,17 @@ f = open (fileName, "r")
 count = 0
 
 
-def butter_lowpass(cutoff, fs, order=5):
-	nyq = 0.5 * fs
-	normal_cutoff = cutoff / nyq
-	b, a = butter(order, normal_cutoff, btype='low', analog=False)
-	return b, a
+#def butter_lowpass(cutoff, fs, order=5):
+#	nyq = 0.5 * fs
+#	normal_cutoff = cutoff / nyq
+#	b, a = butter(order, normal_cutoff, btype='low', analog=False)
+#	return b, a
 
 
-def butter_lowpass_filter(data, cutoff, fs, order=5):
-	b, a = butter_lowpass(cutoff, fs, order=order)
-	y = lfilter(b, a, data)
-	return y
+#def butter_lowpass_filter(data, cutoff, fs, order=5):
+#	b, a = butter_lowpass(cutoff, fs, order=order)
+#	y = lfilter(b, a, data)
+#	return y
 
 # looping through file
 
@@ -131,7 +132,7 @@ for line in f:
 
 	
 	
-	myValue = pitch # relevant for the first exercise, then change this.
+	myValue = g_yaw # relevant for the first exercise, then change this.
 
 	# in order to show a plot use this function to append your value to a list:
 	plotData.append (myValue*180.0/pi)
@@ -144,9 +145,9 @@ f.close()
 
 # show the plot
 if showPlot == True:
-	plt.plot(butter_lowpass_filter(plotData,3,100,3))
-	#plt.plot(plotData)
-	#plt.savefig('imu_exercise_plot.png')
+	#plt.plot(butter_lowpass_filter(plotData,3,100,3))
+	plt.plot(plotData)
+	plt.savefig('imu_exercise_plot.png')
 	plt.show()
 
 
