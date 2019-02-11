@@ -21,7 +21,17 @@ showPlot = True
 plotData = []
 
 ## Initialize your variables here ##
-myValue = 0.0
+count = 0
+delta_time = 0
+g_roll = 0
+g_pitch = 0
+g_yaw = 0
+pitch = 0
+roll = 0
+prev_roll = 0
+prev_pitch = 0
+pp_pitch = 0
+pp_roll = 0
 
 
 ######################################################
@@ -99,16 +109,26 @@ for line in f:
 	# gyro_z	Angular velocity measured about the z axis
 
 	## Insert your code here ##
-	
+	## Insert your code here ##
+	#GYRO:
+	delta_time = ts_now - ts_prev
+	g_roll = g_roll + gyro_y * delta_time
+	g_pitch = g_pitch + gyro_x * delta_time
+	g_yaw = g_yaw + gyro_z * delta_time
 
-	pitch = atan(acc_y/sqrt(acc_x*acc_x+acc_z*acc_z))
+	#ACC:
+	pp_pitch = prev_pitch
+	pp_roll = prev_roll
 
-	roll = atan(-acc_x/acc_z)
-	
-	
-	
-	
-	
+	prev_pitch = pitch
+	prev_roll = roll
+
+	pitch = math.atan((acc_y)/math.sqrt(math.pow(acc_x,2)+math.pow(acc_z,2)))
+	roll = math.atan((-(acc_x))/(acc_z))
+
+	pitch = (pp_pitch + prev_pitch + pitch)/3
+	roll = (pp_roll + prev_roll + roll)/3
+
 	
 	
 	myValue = pitch # relevant for the first exercise, then change this.
